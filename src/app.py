@@ -205,19 +205,6 @@ def list_favorites():
     return jsonify(user_favorites_final), 200
 
 
-@app.route("/protected", methods=["GET"])
-@jwt_required()
-def protected():
-    current_user = get_jwt_identity()
-    user = User.query.get(current_user)
-
-    token = verificacionToken(get_jwt()["jti"])
-    print(token)
-    if token:
-       raise APIException('Token está en lista negra', status_code=404)
-
-    print("EL usuario es: ", user.name)
-    return jsonify({"message":"Estás en una ruta protegida", "name": user.name}), 200
 
 @app.route("/logout", methods=["GET"])
 @jwt_required()
@@ -235,6 +222,19 @@ def logout():
 
     return jsonify({"message":"logout successfully"})
 
+@app.route("/protected", methods=["GET"])
+@jwt_required()
+def protected():
+    current_user = get_jwt_identity()
+    user = User.query.get(current_user)
+
+    token = verificacionToken(get_jwt()["jti"])
+    print(token)
+    if token:
+       raise APIException('Token está en lista negra', status_code=404)
+
+    print("EL usuario es: ", user.name)
+    return jsonify({"message":"Estás en una ruta protegida", "name": user.name}), 200
 
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
